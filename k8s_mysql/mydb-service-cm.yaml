@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata: 
+ name: mydb-service-cm
+ namespace: cloud-park
+data:
+ mydb-svc-write: "mydb-0.mydb.cloud-park.svc.cluster.local"
+ mydb-svc-read: "mydb-read.cloud-park.svc.cluster.local" 

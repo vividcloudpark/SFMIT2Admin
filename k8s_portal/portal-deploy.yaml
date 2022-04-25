@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kukie-portal
+  namespace: cloud-park
+  labels:
+    app: kukie-portal
+    knoxid: cloud-park
+spec:
+  replicas: 2 
+  selector:
+    matchLabels:
+      app: kukie-portal
+      knoxid: cloud-park
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: kukie-portal
+        knoxid: cloud-park
+    spec:
+      containers:
+      - name: kukie-portal
+        image: 106997670121.dkr.ecr.us-east-1.amazonaws.com/cloud-park-t2-portal:v1
+        ports:
+        - containerPort: 8080
+        # autohealing
+        readinessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 20
+        env:
+        - name: MYSQL_ROOT_ID
+          valueFrom:
+            secretKeyRef:
+               name: mydb-secret
+               key: username
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+               name: mydb-secret
+               key: password
+        - name: MYSQL_SERVICE
+          valueFrom:
+            configMapKeyRef:
+              name: mydb-service-cm
+              key: mydb-svc-write
